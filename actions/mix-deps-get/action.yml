@@ -107,4 +107,3 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
-      if: steps.deps_cache.outputs.cache-hit != 'true'

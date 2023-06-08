@@ -63,7 +63,6 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
-      if: steps.build_cache.outputs.cache-hit != 'true'
     - run: mix compile
       shell: bash
       env:
