@@ -32,7 +32,7 @@ inputs:
   cache-prefix:
     description: "Optional prefix for the cache key"
     required: false
-    default: ""
+    default: "cache"
 runs:
   using: "composite"
   steps:
