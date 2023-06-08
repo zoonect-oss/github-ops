@@ -1,0 +1,21 @@
+name: Install Elixir and Erlang
+description: "Install the required Erlang and Elixir versions"
+inputs:
+  erlang-version:
+    description: "Erlang version"
+    required: true
+    default: "25.3"
+  elixir-version:
+    description: "Elixir version"
+    required: true
+    default: "1.14"
+runs:
+  using: "composite"
+  steps:
+    - uses: erlef/setup-beam@v1
+      with:
+        otp-version: ${{ inputs.erlang-version }}
+        elixir-version: ${{ inputs.elixir-version }}
+      env:
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
