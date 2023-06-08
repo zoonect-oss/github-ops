@@ -1,5 +1,5 @@
-name: mix test
-description: "Runs `mix test`"
+name: mix format --check-formatted
+description: "Runs `mix format --check-formatted`"
 inputs:
   compile:
     description: "Wether or not to compile the app before hand"
@@ -55,7 +55,7 @@ runs:
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
       if: ${{inputs.compile}}
-    - run: mix test
+    - run: mix format --check-formatted
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
