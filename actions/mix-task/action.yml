@@ -1,0 +1,67 @@
+name: Run a mix task
+description: "Runs `mix <task>`"
+inputs:
+  task:
+    description: "The task to run"
+    required: true
+  compile:
+    description: "Wether or not to compile the app before hand"
+    required: false
+    default: "true"
+  erlang-version:
+    description: "Erlang version"
+    required: true
+    default: "25.3"
+  elixir-version:
+    description: "Elixir version"
+    required: true
+    default: "1.14"
+  oban-fingerprint:
+    description: "Oban fingerprint"
+    required: false
+    default: ""
+  oban-license:
+    description: "Oban license"
+    required: false
+    default: ""
+  mix-env:
+    description: "The Mix environment to run the task within"
+    required: true
+  git-token:
+    required: false
+    default: ${{ github.token }}
+    description: "A Github access token for checking out git-based dependencies."
+  working-directory:
+    description: "Change the working directory that the commands are run within"
+    required: false
+    default: "${{ github.workspace }}"
+  use-cache:
+    description: "Use caches?"
+    required: false
+    default: "true"
+  cache-prefix:
+    description: "Optional prefix for the cache key"
+    required: false
+    default: "cache"
+runs:
+  using: "composite"
+  steps:
+    - uses: zoonect/github-ops/actions/mix-compile@main
+      with:
+        erlang-version: ${{ inputs.erlang-version }}
+        elixir-version: ${{ inputs.elixir-version }}
+        oban-fingerprint: ${{ inputs.oban-fingerprint }}
+        oban-license: ${{ inputs.oban-license }}
+        mix-env: ${{ inputs.mix-env }}
+        git-token: ${{ inputs.git-token }}
+        working-directory: ${{ inputs.working-directory }}
+        use-cache: ${{ inputs.use-cache }}
+        cache-prefix: ${{ inputs.cache-prefix }}
+      if: ${{inputs.compile}}
+    - run: mix ${{inputs.task}}
+      shell: bash
+      env:
+        MIX_ENV: ${{ inputs.mix-env }}
+        HEX_HOME: ${{ runner.temp }}/.hex
+        MIX_HOME: ${{ runner.temp }}/.mix
+      working-directory: "${{ inputs.working-directory }}"
