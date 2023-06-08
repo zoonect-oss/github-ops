@@ -50,18 +50,21 @@ runs:
     #       ${{ inputs.cache-prefix }}-deps
     #   if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve MIX_HOME Cache
+      id: mix_cache
       uses: actions/cache@v3
       with:
         path: ${{ runner.temp }}/.mix
         key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve HEX_HOME Cache
+      id: hex_cache
       uses: actions/cache@v3
       with:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
       if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve Mix Dependencies Cache
+      id: deps_cache
       uses: actions/cache@v3
       with:
         path: ${{ inputs.working-directory }}/deps
@@ -104,3 +107,4 @@ runs:
         HEX_HOME: ${{ runner.temp }}/.hex
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
+      if: steps.deps_cache.outputs.cache-hit != 'true'
