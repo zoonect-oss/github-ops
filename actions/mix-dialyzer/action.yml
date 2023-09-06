@@ -49,11 +49,15 @@ runs:
   steps:
     - uses: zoonect/github-ops/actions/mix-dialyzer-plt@main
       with:
+        erlang-version: ${{ inputs.erlang-version }}
+        elixir-version: ${{ inputs.elixir-version }}
+        oban-fingerprint: ${{ inputs.oban-fingerprint }}
+        oban-license: ${{ inputs.oban-license }}
+        mix-env: ${{ inputs.mix-env }}
         git-token: ${{ inputs.git-token }}
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-        mix-env: ${{ inputs.mix-env }}
         plt-path: ${{ inputs.plt-path }}
     - run: mix dialyzer --format github
       shell: bash
