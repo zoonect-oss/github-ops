@@ -41,37 +41,29 @@ runs:
       with:
         erlang-version: ${{ inputs.erlang-version }}
         elixir-version: ${{ inputs.elixir-version }}
-    # - name: Retrieve Mix Dependencies Cache
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ${{ inputs.working-directory }}/deps
-    #     key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-    #     restore-keys: |
-    #       ${{ inputs.cache-prefix }}-deps
-    #   if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve MIX_HOME Cache
       id: mix_cache
       uses: actions/cache@v3
+      if: ${{ inputs.use-cache == 'true' }}
       with:
         path: ${{ runner.temp }}/.mix
         key: ${{ inputs.cache-prefix }}-mix-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-      if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve HEX_HOME Cache
       id: hex_cache
       uses: actions/cache@v3
+      if: ${{ inputs.use-cache == 'true' }}
       with:
         path: ${{ runner.temp }}/.hex
         key: ${{ inputs.cache-prefix }}-hex-home-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-      if: ${{ inputs.use-cache == 'true' }}
     - name: Retrieve Mix Dependencies Cache
       id: deps_cache
       uses: actions/cache@v3
+      if: ${{ inputs.use-cache == 'true' }}
       with:
         path: ${{ inputs.working-directory }}/deps
         key: ${{ inputs.cache-prefix }}-deps-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
         restore-keys: |
           ${{ inputs.cache-prefix }}-deps
-      if: ${{ inputs.use-cache == 'true' }}
     - name: Configure git access
       run: git config --global url."https://${{ inputs.git-token }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
       shell: bash
@@ -91,6 +83,7 @@ runs:
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
     - name: Add Oban Hex Repo
+      if: ${{ inputs.oban-fingerprint != '' && inputs.oban-license != '' }}
       shell: bash
       run: mix hex.repo add oban https://getoban.pro/repo --fetch-public-key "$OBAN_FINGERPRINT" --auth-key "$OBAN_LICENSE"
       env:
@@ -99,7 +92,6 @@ runs:
         OBAN_FINGERPRINT: ${{ inputs.oban-fingerprint }}
         OBAN_LICENSE: ${{ inputs.oban-license }}
       working-directory: "${{ github.workspace }}"
-      if: ${{ inputs.oban-fingerprint != '' && inputs.oban-license != '' }}
     - name: Install Mix Dependencies
       shell: bash
       run: mix deps.get

@@ -1,6 +1,14 @@
-name: mix compile
-description: "Run `mix compile` with a build cache"
+name: mix docs
+description: "Runs `mix docs`"
 inputs:
+  compile:
+    description: "Wether or not to compile the app before hand"
+    required: false
+    default: "true"
+  compile-assets:
+    description: "Wether or not to compile the app assets"
+    required: false
+    default: "true"
   erlang-version:
     description: "Erlang version"
     required: true
@@ -35,55 +43,24 @@ inputs:
   cache-prefix:
     description: "Optional prefix for the cache key"
     required: false
-    default: "cache"
-  compile-assets:
-    description: "Wether or not to compile the app assets"
-    required: false
-    default: "true"
+    default: ""
 runs:
   using: "composite"
   steps:
-    - uses: zoonect/github-ops/actions/mix-deps-get@main
+    - uses: zoonect/github-ops/actions/mix-compile@main
+      if: ${{inputs.compile}}
       with:
         erlang-version: ${{ inputs.erlang-version }}
         elixir-version: ${{ inputs.elixir-version }}
         oban-fingerprint: ${{ inputs.oban-fingerprint }}
         oban-license: ${{ inputs.oban-license }}
+        mix-env: ${{ inputs.mix-env }}
         git-token: ${{ inputs.git-token }}
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-    - name: Retrieve Build Cache
-      id: build_cache
-      uses: actions/cache@v3
-      if: ${{ inputs.use-cache == 'true' }}
-      with:
-        path: ${{ inputs.working-directory }}/_build
-        key: ${{ inputs.cache-prefix}}-build-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.erlang-version }}-${{ inputs.elixir-version }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-    - run: mix deps.compile
-      shell: bash
-      env:
-        MIX_ENV: ${{ inputs.mix-env }}
-        HEX_HOME: ${{ runner.temp }}/.hex
-        MIX_HOME: ${{ runner.temp }}/.mix
-      working-directory: "${{ inputs.working-directory }}"
-    - run: mix compile
-      shell: bash
-      env:
-        MIX_ENV: ${{ inputs.mix-env }}
-        HEX_HOME: ${{ runner.temp }}/.hex
-        MIX_HOME: ${{ runner.temp }}/.mix
-      working-directory: "${{ inputs.working-directory }}"
-    - run: mix assets.setup
-      if: ${{inputs.compile-assets}}
-      shell: bash
-      env:
-        MIX_ENV: ${{ inputs.mix-env }}
-        HEX_HOME: ${{ runner.temp }}/.hex
-        MIX_HOME: ${{ runner.temp }}/.mix
-      working-directory: "${{ inputs.working-directory }}"
-    - run: mix assets.deploy
-      if: ${{inputs.compile-assets}}
+        compile-assets: ${{ inputs.compile-assets }}
+    - run: mix docs
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}

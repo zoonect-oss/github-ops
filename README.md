@@ -1,3 +1,3 @@
-# zoonect/github-ops
+# zoonect-oss/github-ops
 
 ---

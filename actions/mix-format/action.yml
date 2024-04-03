@@ -5,6 +5,10 @@ inputs:
     description: "Wether or not to compile the app before hand"
     required: false
     default: "true"
+  compile-assets:
+    description: "Wether or not to compile the app assets"
+    required: false
+    default: "true"
   erlang-version:
     description: "Erlang version"
     required: true
@@ -44,6 +48,7 @@ runs:
   using: "composite"
   steps:
     - uses: zoonect/github-ops/actions/mix-compile@main
+      if: ${{inputs.compile}}
       with:
         erlang-version: ${{ inputs.erlang-version }}
         elixir-version: ${{ inputs.elixir-version }}
@@ -54,7 +59,7 @@ runs:
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-      if: ${{inputs.compile}}
+        compile-assets: ${{ inputs.compile-assets }}
     - run: mix format --check-formatted
       shell: bash
       env:

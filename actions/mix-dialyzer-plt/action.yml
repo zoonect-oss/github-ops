@@ -5,6 +5,10 @@ inputs:
     description: "Wether or not to compile the app before hand"
     required: false
     default: "true"
+  compile-assets:
+    description: "Wether or not to compile the app assets"
+    required: false
+    default: "true"
   erlang-version:
     description: "Erlang version"
     required: true
@@ -48,6 +52,7 @@ runs:
   using: "composite"
   steps:
     - uses: zoonect/github-ops/actions/mix-compile@main
+      if: ${{inputs.compile}}
       with:
         erlang-version: ${{ inputs.erlang-version }}
         elixir-version: ${{ inputs.elixir-version }}
@@ -58,15 +63,16 @@ runs:
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
-      if: ${{inputs.compile}}
+        compile-assets: ${{ inputs.compile-assets }}
     - name: Retrieve PLT Cache
       id: plt_cache
       uses: actions/cache@v3
+      if: ${{ inputs.use-cache == 'true' }}
       with:
         path: ${{ inputs.working-directory }}/${{ inputs.plt-path }}
         key: ${{ inputs.cache-prefix }}-plt-${{ inputs.mix-env }}-${{ runner.os }}-${{ runner.arch }}-${{ inputs.erlang-version }}-${{ inputs.elixir-version }}-${{ hashFiles(format('{0}{1}', inputs.working-directory, '/mix.lock')) }}
-      if: ${{ inputs.use-cache == 'true' }}
     - name: Create PLTs
+      if: steps.plt_cache.outputs.cache-hit != 'true'
       run: |
         mkdir -p ${{ inputs.plt-path }}
         mix dialyzer --plt
@@ -76,4 +82,3 @@ runs:
         MIX_HOME: ${{ runner.temp }}/.mix
       shell: bash
       working-directory: "${{ inputs.working-directory }}"
-      if: steps.plt_cache.outputs.cache-hit != 'true'
