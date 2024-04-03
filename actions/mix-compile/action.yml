@@ -75,7 +75,7 @@ runs:
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
     - run: mix assets.setup
-      if: ${{inputs.compile-assets}}
+      if: ${{ inputs.compile-assets == 'true' }}
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
@@ -83,7 +83,7 @@ runs:
         MIX_HOME: ${{ runner.temp }}/.mix
       working-directory: "${{ inputs.working-directory }}"
     - run: mix assets.deploy
-      if: ${{inputs.compile-assets}}
+      if: ${{ inputs.compile-assets == 'true' }}
       shell: bash
       env:
         MIX_ENV: ${{ inputs.mix-env }}
