@@ -5,6 +5,10 @@ inputs:
     description: "Wether or not to compile the app before hand"
     required: false
     default: "true"
+  compile-assets:
+    description: "Wether or not to compile the app assets"
+    required: false
+    default: "true"
   erlang-version:
     description: "Erlang version"
     required: true
@@ -58,6 +62,7 @@ runs:
         working-directory: ${{ inputs.working-directory }}
         use-cache: ${{ inputs.use-cache }}
         cache-prefix: ${{ inputs.cache-prefix }}
+        compile-assets: ${{ inputs.compile-assets }}
         plt-path: ${{ inputs.plt-path }}
     - run: mix dialyzer --format github
       shell: bash
